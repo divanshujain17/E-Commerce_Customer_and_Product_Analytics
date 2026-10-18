@@ -6,53 +6,48 @@ An end-to-end analytics project using the Brazilian Olist e-commerce dataset. Th
 
 The analysis answers a progression of business questions: how much the business sells, who buys, who returns, which customers and products are valuable, where demand is concentrated, and where operations need attention.
 
-## Project Phases
+## Delivery Roadmap
 
-### Phase 1: Sales and Executive Analytics
+The project is organized into four layers. `Git/` is the canonical working copy; the numbered SQL files and Python modules are the executable source of truth.
 
-Revenue, orders, customers, AOV, state performance, category performance, and monthly trends.
+### Layer 1: Data Foundations and Customer Health
 
-### Phase 2: Customer and RFM Analytics
+| Phase | Scope | Status | Primary deliverable |
+| --- | --- | --- | --- |
+| 1 | MySQL schema architecture and ingestion | Complete | Normalized DDL, keys, decimal-safe columns, and `LOAD DATA LOCAL INFILE` setup |
+| 2 | Python profiling and cleansing | In progress | `python/data_quality_audit.py` for completeness, uniqueness, orphan IDs, timestamps, and IQR flags |
+| 3 | Sales performance and time series | Complete | Monthly revenue, AOV, growth outputs, and executive Power BI KPIs |
+| 4 | Customer segmentation and RFM scoring | Complete | Rule-based five-segment RFM output and customer visuals |
+| 5 | Observed CLV and Pareto analysis | Complete | Historical customer value, ranked spend, cumulative concentration, and CLV extracts |
+| 6 | Monthly cohort retention | Complete in SQL/Python | Cohort offset matrix, retention heatmap, and reusable retention extracts; Power BI matrix remains a presentation enhancement |
 
-Customer value, repeat purchase behavior, churn risk, and the retained segmentation:
+### Layer 2: Geographic and Logistics Fulfillment
 
-- High Value Active
-- High Value At Risk
-- Recent Low Value
-- At Risk
-- Regular Customers
+| Phase | Scope | Status | Primary deliverable |
+| --- | --- | --- | --- |
+| 7 | Geographic analysis and regional penetration | Complete | State, city, ZIP, revenue density, and regional AOV queries |
+| 8 | Delivery SLA and logistics bottlenecks | Complete | Delivery deltas, on-time rate, late-order analysis, and state/category breakdowns |
 
-### Phase 3: Product Analytics
+### Layer 3: Financial, Operational, and Experience Audits
 
-Category revenue, order volume, average price, catalog size, and revenue concentration.
+| Phase | Scope | Status | Primary deliverable |
+| --- | --- | --- | --- |
+| 9 | Payments and installment analytics | Complete | Payment mix, transaction value, installments, and category payment analysis |
+| 10 | Reviews and SLA impact | Data-ready, optional inputs | Review/delay queries in `sql/14_review_and_seller_extensions.sql`; review CSV is required for execution |
+| 11 | Seller performance and marketplace ranking | Data-ready, optional inputs | Seller scorecard queries; seller CSV is required for execution |
+| 12 | Order lifecycle and operational status | Complete | Approval, processing, carrier, delivery, cancellation, and funnel metrics |
+| 13 | Catalog density and inventory dimensions | Complete | Catalog/freight analysis and unsold SKU isolation |
 
-### Phase 4: Time-Series Analytics
+### Layer 4: Advanced Modeling and Predictive Intelligence
 
-Monthly revenue, orders, AOV, peak periods, annual performance, and growth.
+| Phase | Scope | Status | Primary deliverable |
+| --- | --- | --- | --- |
+| 14 | Market basket and product affinity | Complete, optional dependency | Apriori support, confidence, lift, and association-rule export |
+| 15 | Demand and revenue forecasting | Added | `python/revenue_forecast.py` with seasonal exponential smoothing, holdout RMSE/MAPE, and quarterly forecast output |
 
-### Phase 5: Observed Customer Lifetime Value
+### Execution order
 
-Observed CLV is historical customer revenue, not a prediction of future value. The analysis includes customer lifetime revenue, average customer value, top customers, Pareto concentration, CLV by state, and CLV by category.
-
-### Phase 6: Cohort and Retention Analytics
-
-Monthly cohorts, cohort size, month 1/3/6 retention, retention heatmaps, and cohort revenue.
-
-### Phase 7: Geographic Intelligence
-
-State and city revenue, AOV, order volume, customer concentration, and optional geolocation enrichment.
-
-### Phase 8: Delivery and Operations Analytics
-
-Approval, processing, carrier handoff, delivery duration, late orders, and on-time delivery by state and category.
-
-### Phase 9: Payments and Catalog Intelligence
-
-Payment method, transaction value, installments, product dimensions, freight, and products with no observed sales.
-
-### Phase 10-14: Reviews, Sellers, Operations, Catalog, and Market Basket
-
-Delivery and payment operations are covered in `sql/12_operations_and_delivery.sql`; deeper catalog analysis is in `sql/13_catalog_intelligence.sql`. Market basket analysis is a Python/ML module in `python/market_basket_analysis.py` and writes association rules using support, confidence, and lift. Review satisfaction and seller scorecards are prepared in `sql/14_review_and_seller_extensions.sql` and require the optional Olist reviews and sellers CSV files, which are not included in this checkout.
+Run `sql/01_database_setup.sql` through the numbered SQL modules in order. Run the Python modules from `Git/` with the repository root as the working directory. Generated extracts belong in `sql/reports/`; source datasets and report outputs are not mixed with analysis code.
 
 ### SQL and data setup
 
@@ -62,7 +57,7 @@ Run the scripts in numeric order from `sql/` after placing the CSV files in `dat
 
 ### Phase 2: Python
 
-Open `notebook/Ecommerce_Analysis.ipynb`. It uses relative paths and writes reusable CSV outputs to `sql/reports/` for RFM, CLV, cohort retention, product analysis, and time series analysis.
+Open `notebook/Ecommerce_Analysis.ipynb`. It uses relative paths and writes reusable CSV outputs to `sql/reports/` for quality, RFM, CLV, cohort retention, product analysis, delivery, payment, and time series analysis.
 
 Install the required packages with:
 
@@ -72,6 +67,7 @@ numpy
 matplotlib
 seaborn
 jupyter
+statsmodels
 mlxtend  # optional, for market basket analysis
 ```
 
@@ -86,7 +82,7 @@ Open `dashboard/Ecommerce_Analytics_Report.pbix` to explore the available report
 - Customer lifetime value and retention
 - Geographic and operational analysis
 
-Recommended future pages are Customer Retention & Cohort Analysis and Operations, combining delivery, payments, and order status.
+The next presentation enhancement is a dedicated Customer Retention & Cohort matrix page in Power BI, followed by a forecast page using `sql/reports/revenue_forecast.csv`.
 
 Dashboard screenshots are available in `Images/`.
 

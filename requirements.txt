@@ -3,5 +3,6 @@ numpy
 matplotlib
 seaborn
 jupyter
+statsmodels
 # Optional: required only for python/market_basket_analysis.py
 mlxtend
