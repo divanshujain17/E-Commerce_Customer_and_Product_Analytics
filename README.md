@@ -127,6 +127,8 @@ Sao Paulo dominates customers, orders, and revenue. City-level and ZIP-prefix ou
 The operations SQL and notebook calculate average delivery days, on-time percentage, late orders, approval time, processing time, and carrier-to-customer time, with state and category breakdowns. These outputs identify operational bottlenecks without treating missing timestamps as completed deliveries.
 14. **Which payment methods dominate?** 
 The payment module compares payment type, payment value, average transaction value, installments, and payment method by category. Reviews, seller satisfaction, and seller-balanced scoring require the optional source files documented in `sql/14_review_and_seller_extensions.sql`.
+15. **What demand should be planned for next?** 
+The forecasting module validates a short-horizon revenue forecast with holdout RMSE and MAPE, then writes the next three monthly estimates to `sql/reports/revenue_forecast.csv`.
 
 ## Key Findings
 
@@ -137,6 +139,33 @@ The payment module compares payment type, payment value, average transaction val
 - High Value Active customers contribute the largest observed segment revenue, while High Value At Risk customers have the highest average observed value and should be prioritized for re-engagement.
 - Cohort retention declines quickly after the first purchase, which supports a dedicated retention page instead of relying on a generic customer-count visual.
 - The Pareto, delivery, payment, catalog, and market-basket modules generate the detailed outputs used for dashboard decisions. Refresh the extracts before publishing final KPI captions.
+
+## Recommendations and Suggestions
+
+### Customer retention
+
+- Prioritize **High Value At Risk** customers for personalized win-back campaigns because they combine high historical value with weak recent activity.
+- Build a first-to-second-purchase journey for **Recent Low Value** customers using category recommendations, time-limited incentives, and post-delivery follow-up.
+- Use the cohort retention matrix as the primary retention KPI. Track month 1, month 3, and month 6 retention by acquisition cohort instead of relying only on the overall repeat-customer rate.
+
+### Commercial growth
+
+- Protect inventory and promotional visibility for **Beauty & Health**, **Watches Gifts**, and **Bed, Bath & Table Linens**, while checking margin before increasing spend.
+- Use market-basket lift results to create bundles and cross-sell recommendations; require a minimum support threshold so rare combinations do not drive unreliable campaigns.
+- Compare category revenue with catalog size, price, freight, and unsold-SKU counts before expanding a category.
+
+### Regional and operational focus
+
+- Maintain São Paulo as the core volume market, but test regional campaigns in states with higher AOV and lower order penetration.
+- Use late-order severity and on-time delivery rates to target logistics improvements by state and category rather than applying one national SLA action.
+- Reconcile payment totals against order and item revenue before publishing financial KPIs, especially where installments or multiple payment rows exist.
+
+### Data and modeling governance
+
+- Run `python/data_quality_audit.py` before each refresh and block publication when orphan IDs, missing timestamps, or monetary outliers exceed agreed thresholds.
+- Treat observed CLV and Pareto shares as historical measures, not forecasts of customer profitability.
+- Refit the revenue forecast when new monthly data is available and compare it with a seasonal-naive baseline; do not use the forecast for inventory decisions until error remains stable across multiple holdout windows.
+- Add the optional reviews and sellers datasets before marking Phases 10 and 11 as fully complete.
 
 ## Repository Structure
 
